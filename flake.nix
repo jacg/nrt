@@ -14,7 +14,7 @@
 
   outputs = { self, nixpkgs, utils, rust-overlay, crate2nix, ... }:
     let
-      # If you change the name here, you must also do it in Cargo.toml
+      # This name must match the name in Cargo.toml
       name = "rust-nix-template";
       rustChannel = "stable";
     in

@@ -1,6 +1,6 @@
 [package]
 edition = "2018"
-# If you change the name here, you must also do it in flake.nix
+# This name must match the name in flake.nix
 name = "rust-nix-template"
 version = "0.1.0"
 
