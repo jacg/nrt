@@ -26,12 +26,12 @@
             inherit system;
             overlays = [
               rust-overlay.overlay
-              (self: super: {
+              (final: prev: {
                 # Because rust-overlay bundles multiple rust packages into one
                 # derivation, specify that mega-bundle here, so that crate2nix
                 # will use them automatically.
-                rustc = self.rust-bin.${rustChannel}.latest.default;
-                cargo = self.rust-bin.${rustChannel}.latest.default;
+                rustc = final.rust-bin.${rustChannel}.latest.default;
+                cargo = final.rust-bin.${rustChannel}.latest.default;
               })
             ];
           };
