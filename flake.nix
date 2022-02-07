@@ -57,8 +57,8 @@
             };
 
           # Configuration for the non-Rust dependencies
-          buildInputs = with pkgs; [ openssl.dev ];
-          nativeBuildInputs = with pkgs; [ rustc cargo pkgconfig ];
+          buildInputs = [ pkgs.openssl.dev ];
+          nativeBuildInputs = [ pkgs.rustc pkgs.cargo pkgs.pkgconfig ];
         in
         rec {
           packages.${name} = project.rootCrate.build;
@@ -77,13 +77,12 @@
           devShell = pkgs.mkShell
             {
               inputsFrom = builtins.attrValues self.packages.${system};
-              buildInputs = buildInputs ++ (with pkgs;
+              buildInputs = buildInputs ++ ([
                 # Tools you need for development go here.
-                [
-                  nixpkgs-fmt
-                  cargo-watch
-                  pkgs.rust-bin.${rustChannel}.latest.rust-analysis
-                  pkgs.rust-bin.${rustChannel}.latest.rls
+                pkgs.nixpkgs-fmt
+                pkgs.cargo-watch
+                pkgs.rust-bin.${rustChannel}.latest.rust-analysis
+                pkgs.rust-bin.${rustChannel}.latest.rls
                 ]);
               RUST_SRC_PATH = "${pkgs.rust-bin.${rustChannel}.latest.rust-src}/lib/rustlib/src/rust/library";
             };
