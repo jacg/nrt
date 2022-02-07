@@ -1,5 +1,4 @@
 [package]
-authors = ["Sridhar Ratnakumar <srid@srid.ca>"]
 edition = "2018"
 # If you change the name here, you must also do it in flake.nix
 name = "rust-nix-template"
