@@ -1,7 +1,7 @@
 [package]
 edition = "2018"
 # This name must match the name in flake.nix
-name = "rust-nix-template"
+name = "nixified-rust-project"
 version = "0.1.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

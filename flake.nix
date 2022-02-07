@@ -15,7 +15,7 @@
   outputs = { self, nixpkgs, utils, rust-overlay, crate2nix, ... }:
     let
       # This name must match the name in Cargo.toml
-      name = "rust-nix-template";
+      name = "nixified-rust-project";
       rustChannel = "stable";
     in
     utils.lib.eachDefaultSystem
