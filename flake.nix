@@ -33,7 +33,7 @@
                 rust-tcfile  = final.rust-bin.fromRustupToolchainFile ./rust-toolchain;
 
                 rust-latest  = final.rust-bin.stable .latest      ;
-                rust-beta    = final.rust-bin.beta   ."2022-01-25";
+                rust-beta    = final.rust-bin.beta   .latest      ;
                 rust-nightly = final.rust-bin.nightly."2022-01-25";
                 rust-stable  = final.rust-bin.stable ."1.58.1"    ; # nix flake lock --update-input rust-overlay
 
