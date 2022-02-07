@@ -27,12 +27,27 @@
             overlays = [
               rust-overlay.overlay
               (final: prev: rec {
-                my-rust = final.rust-bin.${rustChannel}.latest.default;
+                # If you already have a rust-toolchain file for rustup, you can simply
+                # use fromRustupToolchainFile to get the customized toolchain
+                # derivation.
+                rust-tcfile  = final.rust-bin.fromRustupToolchainFile ./rust-toolchain;
+
+                rust-latest  = final.rust-bin.stable .latest      ;
+                rust-beta    = final.rust-bin.beta   ."2022-01-25";
+                rust-nightly = final.rust-bin.nightly."2022-01-25";
+                rust-stable  = final.rust-bin.stable ."1.58.1"    ; # nix flake lock --update-input rust-overlay
+
+                # Rust system to be used in buldiInputs. Choose between
+                # latest/beta/nightly/stable on the next line
+                #my-rust = rust-stable.override extras;
+
+                #my-rust = final.rust-bin.${rustChannel};
+                my-rust = rust-stable; # .default; # .override extras
                 # Because rust-overlay bundles multiple rust packages into one
                 # derivation, specify that mega-bundle here, so that crate2nix
                 # will use them automatically.
-                rustc = my-rust;
-                cargo = my-rust;
+                rustc = my-rust.default;
+                cargo = my-rust.default;
               })
             ];
           };
@@ -82,10 +97,10 @@
                 # Tools you need for development go here.
                 pkgs.nixpkgs-fmt
                 pkgs.cargo-watch
-                pkgs.rust-bin.${rustChannel}.latest.rust-analysis
-                pkgs.rust-bin.${rustChannel}.latest.rls
+                pkgs.my-rust.rust-analysis
+                pkgs.my-rust.rls
                 ]);
-              RUST_SRC_PATH = "${pkgs.rust-bin.${rustChannel}.latest.rust-src}/lib/rustlib/src/rust/library";
+              RUST_SRC_PATH = "${pkgs.my-rust.rust-src}/lib/rustlib/src/rust/library";
             };
         }
       );
