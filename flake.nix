@@ -5,17 +5,11 @@
   description = "My awesome Rust project";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    utils.url = "github:numtide/flake-utils";
-    rust-overlay.url = "github:oxalica/rust-overlay";
-    crate2nix = {
-      url = "github:kolloch/crate2nix";
-      flake = false;
-    };
-    flake-compat = {
-      url = "github:edolstra/flake-compat";
-      flake = false;
-    };
+    nixpkgs         .url = "github:nixos/nixpkgs/nixos-unstable";
+    utils           .url = "github:numtide/flake-utils";
+    rust-overlay    .url = "github:oxalica/rust-overlay";
+    crate2nix    = { url = "github:kolloch/crate2nix";     flake = false; };
+    flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
   };
 
   outputs = { self, nixpkgs, utils, rust-overlay, crate2nix, ... }:
