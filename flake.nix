@@ -14,7 +14,6 @@
     let
       # This name must match the name in Cargo.toml
       name = "nixified-rust-project";
-      rustChannel = "stable";
     in
     utils.lib.eachDefaultSystem
       (system:
