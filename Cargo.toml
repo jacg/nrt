@@ -1,3 +1,6 @@
+# [workspace]
+# members = ["foo", "bar"]
+
 [package]
 edition = "2021"
 # This name must match the name in flake.nix
