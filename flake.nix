@@ -1,8 +1,5 @@
-# This file is pretty general, and you can adapt it in your project replacing
-# only `name` and `description` below.
-
 {
-  description = "My awesome Rust project";
+  description = "Nixified Rust project";
 
   inputs = {
     nixpkgs         .url = "github:nixos/nixpkgs/nixos-unstable";
@@ -51,8 +48,7 @@
                   })
             ];
           };
-          inherit (import "${crate2nix}/tools.nix" { inherit pkgs; })
-            generatedCargoNix;
+          inherit (import "${crate2nix}/tools.nix" { inherit pkgs; }) generatedCargoNix;
 
           # Create the cargo2nix project
           project = pkgs.callPackage
@@ -61,12 +57,10 @@
               src = ./.;
             })
             {
-              # Individual crate overrides go here
-              # Example: https://github.com/balsoft/simple-osd-daemons/blob/6f85144934c0c1382c7a4d3a2bbb80106776e270/flake.nix#L28-L50
+              # See "Handling external dependencies" on
+              # https://ryantm.github.io/nixpkgs/languages-frameworks/rust/#rust
               defaultCrateOverrides = pkgs.defaultCrateOverrides // {
-                # The himalaya crate itself is overriden here. Typically we
-                # configure non-Rust dependencies (see below) here.
-                ${name} = oldAttrs: {
+                ${name} = old-attributes: {
                   inherit buildInputs nativeBuildInputs;
                 };
               };
@@ -79,17 +73,17 @@
         rec {
           packages.${name} = project.rootCrate.build;
 
-          # nix build
+          # ========== nix build =========================================================
           defaultPackage = packages.${name};
 
-          # nix run
+          # ========== nix run ============================================================
           apps.${name} = utils.lib.mkApp {
             inherit name;
             drv = packages.${name};
           };
           defaultApp = apps.${name};
 
-          # nix develop
+          # ========== nix develop ========================================================
           devShell = pkgs.mkShell {
             inputsFrom = builtins.attrValues self.packages.${system};
             buildInputs = buildInputs ++ [
