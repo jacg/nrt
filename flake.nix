@@ -85,6 +85,9 @@
             drv = packages.${name};
           };
 
+          apps.one = utils.lib.mkApp { drv = packages.${name}; name = "one"; };
+          apps.two = utils.lib.mkApp { drv = packages.${name}; name = "two"; };
+
           # ========== nix develop ========================================================
           devShell = pkgs.mkShell {
             inputsFrom = builtins.attrValues self.packages.${system};
