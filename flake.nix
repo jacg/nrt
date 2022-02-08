@@ -78,11 +78,12 @@
           defaultPackage = packages.${name};
 
           # ========== nix run ============================================================
+          defaultApp = apps.${name};
+
           apps.${name} = utils.lib.mkApp {
             inherit name;
             drv = packages.${name};
           };
-          defaultApp = apps.${name};
 
           # ========== nix develop ========================================================
           devShell = pkgs.mkShell {
