@@ -21,21 +21,13 @@
     utils.lib.eachDefaultSystem
       (system:
         let
-          # Imports
           pkgs = import nixpkgs {
             inherit system;
             overlays = [
+              # ===== Specification of the rust toolchain to be used ====================
               rust-overlay.overlay
               (final: prev:
                 let
-                  extras = {
-                    extensions = [
-                      "rust-analyzer-preview"
-                      "rust-analysis"
-                      # "does-not-exist" # Uncomment this line to generate an error message show list of available extensions
-                    ];
-                    #targets = [ "arg-unknown-linux-gnueabihf" ];
-                  };
                   # If you have a rust-toolchain file for rustup, choose `rustup =
                   # rust-tcfile` further down to get the customized toolchain
                   # derivation.
@@ -45,19 +37,14 @@
                   rust-nightly = final.rust-bin.nightly."2022-02-07";
                   rust-stable  = final.rust-bin.stable ."1.58.1"    ; # nix flake lock --update-input rust-overlay
                   rust-analyzer-preview-on = date:
-                    final.rust-bin.nightly.${ date }.default.override
+                    final.rust-bin.nightly.${date}.default.override
                       { extensions = [ "rust-analyzer-preview" ]; };
                 in
-
                   rec {
-
                     # The version of the Rust system to be used in buldiInputs. Choose between
-                    # tcfile/latest/beta/nightly/stable on the next line
+                    # tcfile/latest/beta/nightly/stable (see above) on the next line
                     rustup = rust-stable;
 
-                    # Because rust-overlay bundles multiple rust packages into one
-                    # derivation, specify that mega-bundle here, so that crate2nix
-                    # will use them automatically.
                     rustc = rustup.default;
                     cargo = rustup.default;
                     rust-analyzer-preview = rust-analyzer-preview-on "2022-02-07";
@@ -85,37 +72,33 @@
               };
             };
 
-          # Configuration for the non-Rust dependencies
+          # non-Rust dependencies
           buildInputs = [ pkgs.openssl.dev ];
-          nativeBuildInputs = [ pkgs.rustc pkgs.cargo pkgs.pkgconfig ];
+          nativeBuildInputs = [ pkgs.rustc pkgs.cargo ];
         in
         rec {
           packages.${name} = project.rootCrate.build;
 
-          # `nix build`
+          # nix build
           defaultPackage = packages.${name};
 
-          # `nix run`
+          # nix run
           apps.${name} = utils.lib.mkApp {
             inherit name;
             drv = packages.${name};
           };
           defaultApp = apps.${name};
 
-          # `nix develop`
-          devShell = pkgs.mkShell
-            {
-              inputsFrom = builtins.attrValues self.packages.${system};
-              buildInputs = buildInputs ++ ([
-                # Tools you need for development go here.
-                pkgs.rust-analyzer-preview
-                pkgs.nixpkgs-fmt
-                pkgs.cargo-watch
-                pkgs.rustup.rust-analysis
-                pkgs.rustup.rls
-                ]);
-              RUST_SRC_PATH = "${pkgs.rustup.rust-src}/lib/rustlib/src/rust/library";
-            };
+          # nix develop
+          devShell = pkgs.mkShell {
+            inputsFrom = builtins.attrValues self.packages.${system};
+            buildInputs = buildInputs ++ [
+              # Tools you need for development go here.
+              pkgs.rust-analyzer-preview
+              #pkgs.rustup.rls pkgs.rustup.rust-analysis
+            ];
+            RUST_SRC_PATH = "${pkgs.rustup.rust-src}/lib/rustlib/src/rust/library";
+          };
         }
       );
 }
