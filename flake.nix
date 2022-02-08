@@ -26,29 +26,42 @@
             inherit system;
             overlays = [
               rust-overlay.overlay
-              (final: prev: rec {
-                # If you already have a rust-toolchain file for rustup, you can simply
-                # use fromRustupToolchainFile to get the customized toolchain
-                # derivation.
-                rust-tcfile  = final.rust-bin.fromRustupToolchainFile ./rust-toolchain;
+              (final: prev:
+                let
+                  extras = {
+                    extensions = [
+                      "rust-analyzer-preview"
+                      "rust-analysis"
+                      # "does-not-exist" # Uncomment this line to generate an error message show list of available extensions
+                    ];
+                    #targets = [ "arg-unknown-linux-gnueabihf" ];
+                  };
+                  # If you have a rust-toolchain file for rustup, choose `rustup =
+                  # rust-tcfile` further down to get the customized toolchain
+                  # derivation.
+                  rust-tcfile  = final.rust-bin.fromRustupToolchainFile ./rust-toolchain;
+                  rust-latest  = final.rust-bin.stable .latest      ;
+                  rust-beta    = final.rust-bin.beta   .latest      ;
+                  rust-nightly = final.rust-bin.nightly."2022-02-07";
+                  rust-stable  = final.rust-bin.stable ."1.58.1"    ; # nix flake lock --update-input rust-overlay
+                  rust-analyzer-preview-on = date:
+                    final.rust-bin.nightly.${ date }.default.override
+                      { extensions = [ "rust-analyzer-preview" ]; };
+                in
 
-                rust-latest  = final.rust-bin.stable .latest      ;
-                rust-beta    = final.rust-bin.beta   .latest      ;
-                rust-nightly = final.rust-bin.nightly."2022-01-25";
-                rust-stable  = final.rust-bin.stable ."1.58.1"    ; # nix flake lock --update-input rust-overlay
+                  rec {
 
-                # Rust system to be used in buldiInputs. Choose between
-                # latest/beta/nightly/stable on the next line
-                #my-rust = rust-stable.override extras;
+                    # The version of the Rust system to be used in buldiInputs. Choose between
+                    # tcfile/latest/beta/nightly/stable on the next line
+                    rustup = rust-stable;
 
-                #my-rust = final.rust-bin.${rustChannel};
-                my-rust = rust-stable; # .default; # .override extras
-                # Because rust-overlay bundles multiple rust packages into one
-                # derivation, specify that mega-bundle here, so that crate2nix
-                # will use them automatically.
-                rustc = my-rust.default;
-                cargo = my-rust.default;
-              })
+                    # Because rust-overlay bundles multiple rust packages into one
+                    # derivation, specify that mega-bundle here, so that crate2nix
+                    # will use them automatically.
+                    rustc = rustup.default;
+                    cargo = rustup.default;
+                    rust-analyzer-preview = rust-analyzer-preview-on "2022-02-07";
+                  })
             ];
           };
           inherit (import "${crate2nix}/tools.nix" { inherit pkgs; })
@@ -95,12 +108,13 @@
               inputsFrom = builtins.attrValues self.packages.${system};
               buildInputs = buildInputs ++ ([
                 # Tools you need for development go here.
+                pkgs.rust-analyzer-preview
                 pkgs.nixpkgs-fmt
                 pkgs.cargo-watch
-                pkgs.my-rust.rust-analysis
-                pkgs.my-rust.rls
+                pkgs.rustup.rust-analysis
+                pkgs.rustup.rls
                 ]);
-              RUST_SRC_PATH = "${pkgs.my-rust.rust-src}/lib/rustlib/src/rust/library";
+              RUST_SRC_PATH = "${pkgs.rustup.rust-src}/lib/rustlib/src/rust/library";
             };
         }
       );
