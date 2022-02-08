@@ -4,7 +4,8 @@
   inputs = {
     nixpkgs         .url = "github:nixos/nixpkgs/nixos-unstable";
     utils           .url = "github:numtide/flake-utils";
-    rust-overlay    .url = "github:oxalica/rust-overlay";
+    rust-overlay = { url = "github:oxalica/rust-overlay"; inputs.nixpkgs    .follows = "nixpkgs";
+                                                          inputs.flake-utils.follows = "utils"; };
     crate2nix    = { url = "github:kolloch/crate2nix";     flake = false; };
     flake-compat = { url = "github:edolstra/flake-compat"; flake = false; };
   };
