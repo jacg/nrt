@@ -1,5 +1,5 @@
 [package]
-edition = "2018"
+edition = "2021"
 # This name must match the name in flake.nix
 name = "nixified-rust-project"
 version = "0.1.0"
