@@ -1,12 +1,52 @@
 # [workspace]
-# members = ["foo", "bar"]
+# members = ["mlem", "bindings"]
 
 [package]
-edition = "2021"
-# This name must match the name in flake.nix
-name = "nixified-rust-project"
+name = "petalo"
 version = "0.1.0"
+authors = ["Jacek Generowicz <jacg@my-post-office.net>"]
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[profile.release]
+debug = true
+
 [dependencies]
+structopt = "0.3"
+ndarray = { version = "0.15.4", features = ["rayon"] }
+rayon = "1.5.1"
+serde = { version = "1.0", features = ["derive"] }
+rand = "0.8.4"
+nalgebra = "0.29"
+ncollide3d = "0.32"
+kiss3d = "0.32"
+num-traits = "0.2.14"
+hdf5 = "0.8.1"
+uom = "0.31.1"
+ordered-float = "2.8"
+indicatif = "0.16.2"
+itertools = "0.10.1"
+binwrite = "0.2.1"
+binrw = "0.8.0"
+linfa = "0.5.0"
+linfa-clustering = "0.5.0"
+num-format = "0.4.0"
+
+[dev-dependencies]
+rstest = "0.12"
+pretty_assertions = "1.0"
+assert_approx_eq = "1.1"
+proptest = "1.0.0"
+tempfile = "3.2"
+rand_isaac = "0.3.0"
+ndarray-rand = "0.14.0"
+rand_core = "0.6.3"
+approx = "0.5.0"
+
+[build-dependencies]
+bindgen = "0.57"
+
+[features]
+compile-error = []
+serial = []
