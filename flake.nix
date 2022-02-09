@@ -67,11 +67,15 @@
                 ${name} = old-attributes: {
                   inherit buildInputs nativeBuildInputs;
                 };
+                hdf5-sys = old-attributes: {
+                  buildInupts = [ pkgs.hdf5 ];
+                  HDF5_DIR = pkgs.symlinkJoin { name = "hdf5"; paths = [ pkgs.hdf5 pkgs.hdf5.dev ]; };
+                };
               };
             };
 
           # non-Rust dependencies
-          buildInputs = [ pkgs.openssl.dev ];
+          buildInputs = [ pkgs.openssl.dev pkgs.hdf5 ];
           nativeBuildInputs = [ pkgs.rustc pkgs.cargo ];
         in
         rec {
@@ -100,6 +104,7 @@
               #pkgs.rustup.rls pkgs.rustup.rust-analysis
             ];
             RUST_SRC_PATH = "${pkgs.rustup.rust-src}/lib/rustlib/src/rust/library";
+            HDF5_DIR = pkgs.symlinkJoin { name = "hdf5"; paths = [ pkgs.hdf5 pkgs.hdf5.dev ]; };
           };
         }
       );
