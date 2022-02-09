@@ -15,7 +15,12 @@
       # This name must match the name in Cargo.toml
       name = "nixified-rust-project";
     in
-    utils.lib.eachDefaultSystem
+
+    # Option 1: try to support each default system
+    # utils.lib.eachDefaultSystem # NB Some packages in nixpkgs are not supported on some systems
+
+    # Option 2: try to support selected systems
+    utils.lib.eachSystem ["x86_64-linux" "aarch64-darwin"] # ["x86_64-linux" "i686-linux" "aarch64-linux" "x86_64-darwin"]
       (system:
         let
           pkgs = import nixpkgs {
