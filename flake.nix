@@ -52,6 +52,18 @@
                   })
             ];
           };
+
+          # ----- Conditional inclusion ----------------------------------------------------
+          nothing = pkgs.coreutils;
+          linux      = drvn: if pkgs.stdenv.isLinux  then drvn else nothing;
+          darwin     = drvn: if pkgs.stdenv.isDarwin then drvn else nothing;
+          linuxList  = list: if pkgs.stdenv.isLinux  then list else [];
+          darwinList = list: if pkgs.stdenv.isDarwin then list else [];
+          darwinStr  = str:  if pkgs.stdenv.isDarwin then str  else "";
+
+          # ----- Darwin-specific ----------------------------------------------------------
+          darwin-frameworks = pkgs.darwin.apple_sdk.frameworks;
+
           inherit (import "${crate2nix}/tools.nix" { inherit pkgs; }) generatedCargoNix;
 
           # Create the cargo2nix project
@@ -68,14 +80,28 @@
                   inherit buildInputs nativeBuildInputs;
                 };
                 hdf5-sys = old-attributes: {
-                  buildInupts = [ pkgs.hdf5 ];
+                  buildInupts = [
+                    pkgs.hdf5
+
+                    # Needed for compilation to succeed on Macs
+                    (darwin darwin-frameworks.AppKit)
+                    (darwin darwin-frameworks.CoreText)
+
+                  ];
                   HDF5_DIR = pkgs.symlinkJoin { name = "hdf5"; paths = [ pkgs.hdf5 pkgs.hdf5.dev ]; };
                 };
               };
             };
 
           # non-Rust dependencies
-          buildInputs = [ pkgs.openssl.dev pkgs.hdf5 ];
+          buildInputs = [
+            pkgs.openssl.dev
+            pkgs.hdf5
+
+            # Needed for compilation to succeed on Macs
+            (darwin darwin-frameworks.AppKit)
+            (darwin darwin-frameworks.CoreText)
+          ];
           nativeBuildInputs = [ pkgs.rustc pkgs.cargo ];
         in
         rec {
